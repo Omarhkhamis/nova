@@ -1,0 +1,8 @@
+<svg width="220" height="92" viewBox="0 0 220 92" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Delta Marine Works</title>
+  <rect width="220" height="92" rx="16" fill="none"/>
+  <path d="M42 68L72 22L102 68H84L72 48L60 68H42Z" fill="#7FB3B8"/>
+  <path d="M60 68L72 48L84 68H60Z" fill="#D9A441"/>
+  <text x="118" y="43" fill="#F8FBFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">DELTA</text>
+  <text x="118" y="62" fill="#AFC1CA" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">MARINE</text>
+</svg>

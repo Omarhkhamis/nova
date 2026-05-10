@@ -1,0 +1,9 @@
+<svg width="220" height="92" viewBox="0 0 220 92" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Arkan Process</title>
+  <rect width="220" height="92" rx="16" fill="none"/>
+  <circle cx="67" cy="46" r="26" fill="#7FB3B8"/>
+  <path d="M67 20C82 34 85 58 67 72C49 58 52 34 67 20Z" fill="#061521"/>
+  <path d="M53 46H81" stroke="#D9A441" stroke-width="6" stroke-linecap="round"/>
+  <text x="108" y="43" fill="#F8FBFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">ARKAN</text>
+  <text x="108" y="62" fill="#AFC1CA" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">PROCESS</text>
+</svg>

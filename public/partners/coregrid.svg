@@ -1,0 +1,8 @@
+<svg width="220" height="92" viewBox="0 0 220 92" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">CoreGrid Systems</title>
+  <rect width="220" height="92" rx="16" fill="none"/>
+  <rect x="39" y="25" width="50" height="42" rx="10" stroke="#7FB3B8" stroke-width="7"/>
+  <path d="M52 46H76M64 34V58" stroke="#D9A441" stroke-width="7" stroke-linecap="round"/>
+  <text x="108" y="43" fill="#F8FBFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">COREGRID</text>
+  <text x="108" y="62" fill="#AFC1CA" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">SYSTEMS</text>
+</svg>

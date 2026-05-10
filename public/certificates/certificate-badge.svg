@@ -1,0 +1,13 @@
+<svg width="180" height="124" viewBox="0 0 180 124" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Certification document</title>
+  <rect x="18" y="10" width="116" height="92" rx="10" fill="#F8FBFC"/>
+  <rect x="29" y="24" width="94" height="10" rx="5" fill="#7FB3B8"/>
+  <rect x="35" y="46" width="64" height="5" rx="2.5" fill="#AFC1CA"/>
+  <rect x="35" y="58" width="78" height="5" rx="2.5" fill="#D7E1E4"/>
+  <rect x="35" y="70" width="54" height="5" rx="2.5" fill="#D7E1E4"/>
+  <circle cx="118" cy="82" r="25" fill="#D9A441"/>
+  <circle cx="118" cy="82" r="15" fill="#061521"/>
+  <path d="M109 82.5L115.5 89L128 75" stroke="#F8FBFC" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M104 103L97 121L116 112L135 121L128 103" fill="#7FB3B8"/>
+  <rect x="20" y="12" width="112" height="88" rx="9" stroke="#102B3A" stroke-opacity=".16" stroke-width="4"/>
+</svg>

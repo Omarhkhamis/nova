@@ -1,0 +1,8 @@
+<svg width="220" height="92" viewBox="0 0 220 92" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Nexa Cooling</title>
+  <rect width="220" height="92" rx="16" fill="none"/>
+  <circle cx="68" cy="46" r="9" fill="#D9A441"/>
+  <path d="M68 19V35M68 57V73M41 46H57M79 46H95M49 27L60 38M76 54L87 65M87 27L76 38M60 54L49 65" stroke="#7FB3B8" stroke-width="7" stroke-linecap="round"/>
+  <text x="112" y="43" fill="#F8FBFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">NEXA</text>
+  <text x="112" y="62" fill="#AFC1CA" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">COOLING</text>
+</svg>

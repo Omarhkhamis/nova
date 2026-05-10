@@ -1,0 +1,40 @@
+{
+  "name": "nova",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:push": "node --env-file=.env scripts/db/push.mjs"
+  },
+  "keywords": [
+    "industrial",
+    "engineering",
+    "nextjs"
+  ],
+  "author": "Novatech Advanced Solutions L.L.C",
+  "license": "UNLICENSED",
+  "description": "",
+  "dependencies": {
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.11.0",
+    "next": "^16.2.4",
+    "pg": "^8.20.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "slate": "^0.124.1",
+    "slate-react": "^0.124.0",
+    "sweetalert2": "^11.26.24"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.4",
+    "typescript": "^6.0.3"
+  }
+}

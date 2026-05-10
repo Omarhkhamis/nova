@@ -1,0 +1,8 @@
+<svg width="220" height="92" viewBox="0 0 220 92" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Bluebay Logistics</title>
+  <rect width="220" height="92" rx="16" fill="none"/>
+  <path d="M36 58C48 42 62 42 74 58C86 74 100 74 112 58" stroke="#7FB3B8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M43 40C54 28 68 28 79 40C88 50 100 50 109 40" stroke="#D9A441" stroke-width="6" stroke-linecap="round"/>
+  <text x="122" y="43" fill="#F8FBFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">BLUEBAY</text>
+  <text x="122" y="62" fill="#AFC1CA" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">LOGISTICS</text>
+</svg>
