@@ -1,6 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+import { hashPassword, requireAdmin } from "@/lib/auth";
 import { listFromText, mutate } from "@/lib/cms";
+import { query } from "@/lib/db";
 
 function str(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -209,4 +212,71 @@ export async function updateSettings(formData: FormData) {
       socialFacebook: str(formData, "socialFacebook"),
     })],
   );
+}
+
+export async function addAdmin(formData: FormData) {
+  await requireAdmin();
+
+  const email = str(formData, "email").toLowerCase();
+  const password = str(formData, "password");
+
+  if (!email || !password) {
+    return;
+  }
+
+  await query(
+    `INSERT INTO admins (name, email, password_hash)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (email) DO NOTHING`,
+    [str(formData, "name"), email, await hashPassword(password)],
+  );
+  revalidatePath("/nv-admin/dashboard");
+}
+
+export async function updateAdmin(formData: FormData) {
+  await requireAdmin();
+
+  const id = Number(str(formData, "id"));
+  const email = str(formData, "email").toLowerCase();
+  const password = str(formData, "password");
+
+  if (!Number.isInteger(id) || !email) {
+    return;
+  }
+
+  if (password) {
+    await query(
+      `UPDATE admins
+       SET name=$2, email=$3, password_hash=$4, updated_at=NOW()
+       WHERE id=$1
+         AND NOT EXISTS (SELECT 1 FROM admins WHERE email=$3 AND id <> $1)`,
+      [id, str(formData, "name"), email, await hashPassword(password)],
+    );
+  } else {
+    await query(
+      `UPDATE admins
+       SET name=$2, email=$3, updated_at=NOW()
+       WHERE id=$1
+         AND NOT EXISTS (SELECT 1 FROM admins WHERE email=$3 AND id <> $1)`,
+      [id, str(formData, "name"), email],
+    );
+  }
+
+  revalidatePath("/nv-admin/dashboard");
+}
+
+export async function deleteAdmin(formData: FormData) {
+  const currentAdmin = await requireAdmin();
+  const id = Number(str(formData, "id"));
+
+  if (!Number.isInteger(id) || id === currentAdmin.id) {
+    return;
+  }
+
+  await query(
+    `DELETE FROM admins
+     WHERE id=$1 AND (SELECT COUNT(*) FROM admins) > 1`,
+    [id],
+  );
+  revalidatePath("/nv-admin/dashboard");
 }

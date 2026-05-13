@@ -97,11 +97,15 @@ export async function getDashboardData(): Promise<DashboardData> {
 }
 
 export async function mutate(sql: string, params: unknown[] = []) {
+  const { requireAdmin } = await import("@/lib/auth");
+
+  await requireAdmin();
   await query(sql, params);
   revalidatePath("/");
   revalidatePath("/catalog");
   revalidatePath("/blog");
   revalidatePath("/dashboard");
+  revalidatePath("/nv-admin/dashboard");
 }
 
 export function listFromText(value: FormDataEntryValue | null) {

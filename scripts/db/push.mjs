@@ -1,6 +1,9 @@
 import pg from "pg";
+import { randomBytes, scrypt as nodeScrypt } from "node:crypto";
+import { promisify } from "node:util";
 
 const { Pool } = pg;
+const scrypt = promisify(nodeScrypt);
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -13,7 +16,23 @@ const pool = new Pool({ connectionString: databaseUrl });
 
 const json = (value) => JSON.stringify(value);
 
+async function hashPassword(password) {
+  const salt = randomBytes(16).toString("hex");
+  const hash = await scrypt(password, salt, 64);
+
+  return `scrypt$${salt}$${hash.toString("hex")}`;
+}
+
 const schema = `
+CREATE TABLE IF NOT EXISTS admins (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL DEFAULT '',
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value JSONB NOT NULL
@@ -226,6 +245,13 @@ const blogs = [
 ];
 
 await pool.query(schema);
+
+await pool.query(
+  `INSERT INTO admins (name, email, password_hash)
+   VALUES ($1, $2, $3)
+   ON CONFLICT (email) DO NOTHING`,
+  ["Main Admin", "admin@admin.com", await hashPassword("123456")],
+);
 
 await pool.query(`
 INSERT INTO hero (id, eyebrow, title, headline, description, image, primary_cta_label, primary_cta_href, secondary_cta_label, secondary_cta_href)

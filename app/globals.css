@@ -2236,6 +2236,117 @@ html[data-theme="light"] .blog-filter select {
 }
 }
 
+.admin-login-shell {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 82% 12%, rgb(137 196 204 / 18%), transparent 28rem),
+    linear-gradient(135deg, #06111d 0%, #091b29 54%, #07131f 100%);
+  color: #f7fbfd;
+}
+
+.admin-login-card {
+  width: min(460px, 100%);
+  border: 1px solid rgb(137 196 204 / 16%);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgb(13 32 47 / 94%), rgb(8 22 35 / 96%));
+  box-shadow: 0 24px 90px rgb(0 0 0 / 28%);
+  padding: 24px;
+}
+
+.admin-login-card__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.admin-login-card__brand > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--secondary);
+  color: #061521;
+  font-weight: 900;
+}
+
+.admin-login-card__brand p {
+  margin: 0 0 5px;
+  color: #8bd4dc;
+  font-size: .78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-login-card__brand h1 {
+  color: #f7fbfd;
+  font-size: 1.9rem;
+  line-height: 1.08;
+}
+
+.admin-login-alert {
+  margin: 0 0 16px;
+  border: 1px solid rgb(255 134 134 / 24%);
+  border-radius: 8px;
+  background: rgb(180 35 24 / 14%);
+  color: #ffb6b6;
+  padding: 11px 12px;
+  font-size: .9rem;
+  font-weight: 800;
+}
+
+.admin-login-form {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-login-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-login-form label span {
+  color: #b7c7d4;
+  font-size: .84rem;
+  font-weight: 800;
+}
+
+.admin-login-form label div {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgb(137 196 204 / 18%);
+  border-radius: 8px;
+  background: rgb(4 13 22 / 72%);
+  color: #8bd4dc;
+  padding: 0 12px;
+}
+
+.admin-login-form input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #f7fbfd;
+  font: inherit;
+  outline: none;
+  padding: 13px 0;
+}
+
+.admin-login-form button {
+  min-height: 46px;
+  border: 1px solid rgb(137 196 204 / 28%);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #123246, #0d2638);
+  color: #f7fbfd;
+  cursor: pointer;
+  font-weight: 900;
+}
+
 .dashboard-shell {
   min-height: 100svh;
   background: #f4f7fb;
@@ -2533,6 +2644,12 @@ html[data-theme="light"] .blog-filter select {
 
 .dashboard-content-card .dashboard-form {
   margin: 0;
+  padding: 0 14px 14px;
+}
+
+.dashboard-delete-row {
+  display: flex;
+  justify-content: flex-end;
   padding: 0 14px 14px;
 }
 
