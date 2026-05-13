@@ -200,6 +200,8 @@ export async function updateSettings(formData: FormData) {
      ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value`,
     [JSON.stringify({
       logoText: str(formData, "logoText"),
+      logoImage: str(formData, "logoImage"),
+      logoAlt: str(formData, "logoAlt"),
       brandName: str(formData, "brandName"),
       brandSubtitle: str(formData, "brandSubtitle"),
       favicon: str(formData, "favicon"),
@@ -210,6 +212,35 @@ export async function updateSettings(formData: FormData) {
       socialLinkedin: str(formData, "socialLinkedin"),
       socialInstagram: str(formData, "socialInstagram"),
       socialFacebook: str(formData, "socialFacebook"),
+    })],
+  );
+}
+
+export async function updateSeoSettings(formData: FormData) {
+  const rawSiteUrl = str(formData, "siteUrl");
+  const siteUrl = rawSiteUrl && !/^https?:\/\//i.test(rawSiteUrl) ? `https://${rawSiteUrl}` : rawSiteUrl;
+
+  await mutate(
+    `INSERT INTO settings (key, value) VALUES ('seo', $1)
+     ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value`,
+    [JSON.stringify({
+      siteName: str(formData, "siteName"),
+      siteUrl,
+      defaultTitle: str(formData, "defaultTitle"),
+      titleTemplate: str(formData, "titleTemplate"),
+      description: str(formData, "description"),
+      keywords: listFromText(formData.get("keywords")),
+      canonicalPath: str(formData, "canonicalPath") || "/",
+      openGraphTitle: str(formData, "openGraphTitle"),
+      openGraphDescription: str(formData, "openGraphDescription"),
+      openGraphImage: str(formData, "openGraphImage"),
+      twitterTitle: str(formData, "twitterTitle"),
+      twitterDescription: str(formData, "twitterDescription"),
+      twitterImage: str(formData, "twitterImage"),
+      googleSiteVerification: str(formData, "googleSiteVerification"),
+      robotsIndex: formData.get("robotsIndex") === "on",
+      robotsFollow: formData.get("robotsFollow") === "on",
+      locale: str(formData, "locale"),
     })],
   );
 }

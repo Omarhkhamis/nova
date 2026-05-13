@@ -2,13 +2,43 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Search, SlidersHorizontal } from "lucide-react";
 import { catalogCategories, catalogProducts } from "./products";
+
+type CatalogSiteSettings = {
+  logoText?: string;
+  logoImage?: string;
+  logoAlt?: string;
+  brandName?: string;
+  brandSubtitle?: string;
+};
 
 export default function CatalogPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
+  const [site, setSite] = useState<CatalogSiteSettings | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch("/api/site-data", { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data: { settings?: { site?: CatalogSiteSettings } }) => {
+        if (isMounted) {
+          setSite(data.settings?.site ?? null);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setSite(null);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -28,14 +58,27 @@ export default function CatalogPage() {
     });
   }, [category, query]);
 
+  const logoText = site?.logoText ?? "NAS";
+  const logoImage = site?.logoImage;
+  const logoAlt = site?.logoAlt ?? site?.brandName ?? "Novatech Advanced Solutions";
+  const brandName = site?.brandName ?? "Novatech";
+  const brandSubtitle = site?.brandSubtitle ?? "Advanced Solutions";
+
   return (
     <main className="catalog-page">
       <header className="container catalog-topbar">
-        <Link className="brand" href="/" aria-label="Novatech Advanced Solutions">
-          <span className="brand__mark">NAS</span>
+        <Link className="brand" href="/" aria-label={brandName}>
+          {logoImage ? (
+            <span className="brand__mark brand__mark--image">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={logoImage} alt={logoAlt} />
+            </span>
+          ) : (
+            <span className="brand__mark">{logoText}</span>
+          )}
           <span>
-            <strong>Novatech</strong>
-            <small>Advanced Solutions</small>
+            <strong>{brandName}</strong>
+            <small>{brandSubtitle}</small>
           </span>
         </Link>
         <Link className="catalog-back" href="/">

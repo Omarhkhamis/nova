@@ -262,11 +262,31 @@ ON CONFLICT (id) DO NOTHING;
 await pool.query(`
 INSERT INTO settings (key, value) VALUES
 ('site', $1),
-('socials', $2)
+('socials', $2),
+('seo', $3)
 ON CONFLICT (key) DO NOTHING;
 `, [
-  json({ logoText: "NAS", brandName: "Novatech", brandSubtitle: "Advanced Solutions", favicon: "/favicon.svg", phone: "+971556271982", whatsapp: "+971556290934", email: "novatech.ae@gmail.com", address: "Al Raffa, Dubai, United Arab Emirates" }),
+  json({ logoText: "NAS", logoImage: "", logoAlt: "Novatech Advanced Solutions logo", brandName: "Novatech", brandSubtitle: "Advanced Solutions", favicon: "/favicon.svg", phone: "+971556271982", whatsapp: "+971556290934", email: "novatech.ae@gmail.com", address: "Al Raffa, Dubai, United Arab Emirates" }),
   json([{ platform: "LinkedIn", url: "#" }, { platform: "Instagram", url: "#" }, { platform: "Facebook", url: "#" }]),
+  json({
+    siteName: "Novatech Advanced Solutions",
+    siteUrl: "https://novatech-nas.ae",
+    defaultTitle: "Novatech Advanced Solutions | Industrial & Engineering Services",
+    titleTemplate: "%s | Novatech Advanced Solutions",
+    description: "Industrial engineering, automation, marine service, sourcing, and operational support for modern facilities.",
+    keywords: ["industrial engineering", "automation", "marine service", "industrial supply", "Dubai"],
+    canonicalPath: "/",
+    openGraphTitle: "",
+    openGraphDescription: "",
+    openGraphImage: "",
+    twitterTitle: "",
+    twitterDescription: "",
+    twitterImage: "",
+    googleSiteVerification: "",
+    robotsIndex: true,
+    robotsFollow: true,
+    locale: "en_AE",
+  }),
 ]);
 
 for (const [index, item] of sectionContent.entries()) {

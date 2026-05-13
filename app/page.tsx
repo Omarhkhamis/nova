@@ -44,6 +44,8 @@ type PublicSiteData = {
   settings: {
     site?: {
       logoText?: string;
+      logoImage?: string;
+      logoAlt?: string;
       brandName?: string;
       brandSubtitle?: string;
       phone?: string;
@@ -736,6 +738,8 @@ export default function Home() {
 
 function Header({ site }: { site?: PublicSiteData["settings"]["site"] }) {
   const logoText = site?.logoText ?? "NAS";
+  const logoImage = site?.logoImage;
+  const logoAlt = site?.logoAlt ?? site?.brandName ?? "Novatech Advanced Solutions";
   const brandName = site?.brandName ?? "Novatech";
   const brandSubtitle = site?.brandSubtitle ?? "Advanced Solutions";
 
@@ -743,7 +747,14 @@ function Header({ site }: { site?: PublicSiteData["settings"]["site"] }) {
     <header className="site-header">
       <div className="header-primary">
         <a className="brand" href="#top" aria-label="Novatech Advanced Solutions">
-          <span className="brand__mark">{logoText}</span>
+          {logoImage ? (
+            <span className="brand__mark brand__mark--image">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={logoImage} alt={logoAlt} />
+            </span>
+          ) : (
+            <span className="brand__mark">{logoText}</span>
+          )}
           <span>
             <strong>{brandName}</strong>
             <small>{brandSubtitle}</small>
@@ -806,6 +817,8 @@ function Footer({
   site?: PublicSiteData["settings"]["site"];
 }) {
   const logoText = site?.logoText ?? "NAS";
+  const logoImage = site?.logoImage;
+  const logoAlt = site?.logoAlt ?? site?.brandName ?? "Novatech Advanced Solutions";
   const brandName = site?.brandName ?? "Novatech";
 
   return (
@@ -813,7 +826,14 @@ function Footer({
       <div className="container footer__grid">
         <div className="footer__brand">
           <a className="footer__logo" href="#top" aria-label="Novatech Advanced Solutions">
-            <span>{logoText}</span>
+            {logoImage ? (
+              <span className="footer__logo-mark footer__logo-mark--image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={logoImage} alt={logoAlt} />
+              </span>
+            ) : (
+              <span className="footer__logo-mark">{logoText}</span>
+            )}
             <strong>{brandName}</strong>
           </a>
           <p>

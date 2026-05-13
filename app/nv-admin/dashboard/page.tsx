@@ -9,6 +9,7 @@ import { blogCategories, blogStatuses, getDashboardData } from "@/lib/cms";
 import { listAdmins, requireAdmin } from "@/lib/auth";
 import type { AdminListItem } from "@/lib/auth";
 import { listPublicMedia } from "@/lib/media";
+import { defaultSeoSettings } from "@/lib/site-settings";
 import {
   addAdmin,
   addAboutCard,
@@ -41,6 +42,7 @@ import {
   updateProduct,
   updateSectionContent,
   updateService,
+  updateSeoSettings,
   updateSettings,
 } from "./actions";
 import { logoutAdmin } from "../actions";
@@ -94,6 +96,8 @@ export default async function DashboardPage() {
   const admin = await requireAdmin();
   const [data, media, admins] = await Promise.all([getDashboardData(), listPublicMedia(), listAdmins()]);
   const site = (data.settings.site ?? {}) as Record<string, string>;
+  const seo = (data.settings.seo ?? {}) as Record<string, string | boolean | string[]>;
+  const seoKeywords = Array.isArray(seo.keywords) ? seo.keywords.join("\n") : String(seo.keywords ?? "");
 
   return (
     <main className="dashboard-shell">
@@ -117,6 +121,7 @@ export default async function DashboardPage() {
             </div>
           </details>
           <a href="#media">Media</a>
+          <a href="#seo">SEO</a>
           <a href="#settings">Settings</a>
         </nav>
       </aside>
@@ -226,10 +231,43 @@ export default async function DashboardPage() {
 
         <MediaManager initialMedia={media} />
 
+        <section className="dashboard-panel" id="seo">
+          <h2>SEO</h2>
+          <p>Basic metadata used by the website, search engines, and social sharing previews.</p>
+          <form className="dashboard-form" action={updateSeoSettings} data-dashboard-form>
+            <Field name="siteName" label="Site name" defaultValue={String(seo.siteName ?? defaultSeoSettings.siteName)} />
+            <Field name="siteUrl" label="Site URL" defaultValue={String(seo.siteUrl ?? defaultSeoSettings.siteUrl)} />
+            <Field name="defaultTitle" label="Default meta title" defaultValue={String(seo.defaultTitle ?? defaultSeoSettings.defaultTitle)} />
+            <Field name="titleTemplate" label="Title template" defaultValue={String(seo.titleTemplate ?? defaultSeoSettings.titleTemplate)} />
+            <TextArea name="description" label="Meta description" defaultValue={String(seo.description ?? defaultSeoSettings.description)} rows={4} />
+            <TextArea name="keywords" label="Keywords - one per line" defaultValue={seoKeywords || defaultSeoSettings.keywords.join("\n")} rows={5} />
+            <Field name="canonicalPath" label="Canonical path" defaultValue={String(seo.canonicalPath ?? defaultSeoSettings.canonicalPath)} />
+            <Field name="locale" label="Open Graph locale" defaultValue={String(seo.locale ?? defaultSeoSettings.locale)} />
+            <Field name="openGraphTitle" label="Open Graph title" defaultValue={String(seo.openGraphTitle ?? "")} />
+            <TextArea name="openGraphDescription" label="Open Graph description" defaultValue={String(seo.openGraphDescription ?? "")} rows={3} />
+            <MediaPicker name="openGraphImage" label="Open Graph image" defaultValue={String(seo.openGraphImage ?? "")} initialMedia={media} />
+            <Field name="twitterTitle" label="Twitter title" defaultValue={String(seo.twitterTitle ?? "")} />
+            <TextArea name="twitterDescription" label="Twitter description" defaultValue={String(seo.twitterDescription ?? "")} rows={3} />
+            <MediaPicker name="twitterImage" label="Twitter image" defaultValue={String(seo.twitterImage ?? "")} initialMedia={media} />
+            <Field name="googleSiteVerification" label="Google site verification" defaultValue={String(seo.googleSiteVerification ?? "")} />
+            <label className="dashboard-checkbox">
+              <input type="checkbox" name="robotsIndex" defaultChecked={seo.robotsIndex !== false} />
+              <span>Allow indexing</span>
+            </label>
+            <label className="dashboard-checkbox">
+              <input type="checkbox" name="robotsFollow" defaultChecked={seo.robotsFollow !== false} />
+              <span>Allow following links</span>
+            </label>
+            <button className="dashboard-button" type="submit">Save SEO</button>
+          </form>
+        </section>
+
         <section className="dashboard-panel" id="settings">
           <h2>Settings</h2>
           <form className="dashboard-form" action={updateSettings} data-dashboard-form>
             <Field name="logoText" label="Main logo text" defaultValue={site.logoText} />
+            <MediaPicker name="logoImage" label="Logo image" defaultValue={site.logoImage} initialMedia={media} />
+            <Field name="logoAlt" label="Logo alt text" defaultValue={site.logoAlt} />
             <Field name="brandName" label="Brand name" defaultValue={site.brandName} />
             <Field name="brandSubtitle" label="Brand subtitle" defaultValue={site.brandSubtitle} />
             <MediaPicker name="favicon" label="Favicon" defaultValue={site.favicon} initialMedia={media} />
