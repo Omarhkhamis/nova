@@ -56,7 +56,7 @@ export type BlogPost = {
 };
 
 export const siteName = "Novatech Advanced Solutions";
-export const siteUrl = "https://novatech.example.com";
+export const siteUrl = "https://novatech-nas.ae";
 
 export const navLinks: NavLink[] = [
   { label: "Services", href: "#services" },

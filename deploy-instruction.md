@@ -1,196 +1,238 @@
 # Deploy Instructions
 
-هذا الملف يشرح طريقة الدخول إلى السيرفر وتحديث تطبيق `nova` بأمان، مع تطبيق تحديثات قاعدة البيانات بدون حذف أو استبدال البيانات الحالية.
+هذا الملف يشرح طريقة تحديث تطبيق `nova` على السيرفر الحالي، مع الحفاظ على ملف البيئة وقاعدة البيانات الحالية.
 
-## Server Access
+## Server Details
 
 - SSH host alias: `hemati`
+- Server user currently used for this project: `root`
 - Project path on server: `/var/www/nova`
-- Effective project owner on server: `deploy`
+- Git branch: `main`
 - PM2 app name: `nova`
-- App start mode in PM2: `npm start -- --port 3005`
+- PM2 start command: `npm start -- --port 3002 --hostname 127.0.0.1`
+- Public domain: `novatech-nas.ae`
+- Nginx site file: `/etc/nginx/sites-available/nova`
+- Nginx upstream: `http://127.0.0.1:3002`
 
 مهم:
-- لا تعمل داخل `/var/www/nova` كمستخدم `root` إلا عند الحاجة للوصول فقط.
-- نفّذ أوامر المشروع كمستخدم `deploy` حتى لا تتخربط الصلاحيات.
+- المشروع الحالي على السيرفر مملوك لـ `root` وPM2 يعمل تحت `root`.
+- لا تبدّل إلى مستخدم `deploy` إلا بعد نقل ملكية `/var/www/nova` وتشغيل PM2 من نفس المستخدم.
+- لا تحذف ملف `.env` ولا تستبدل قاعدة البيانات من local.
 
 ## SSH Login
 
-للدخول للسيرفر:
-
 ```bash
 ssh hemati
-```
-
-للدخول مباشرة كمستخدم `deploy` داخل المشروع:
-
-```bash
-ssh hemati
-sudo -u deploy -i
 cd /var/www/nova
 ```
 
 أو بسطر واحد:
 
 ```bash
-ssh hemati 'sudo -u deploy bash -lc "cd /var/www/nova && bash"'
+ssh hemati 'cd /var/www/nova && bash'
 ```
 
 ## Before Updating
 
-افحص حالة المشروع أولًا:
+افحص حالة المشروع والتطبيق:
 
 ```bash
-ssh hemati 'sudo -u deploy bash -lc "cd /var/www/nova && git status --short --branch && pm2 describe nova"'
+ssh hemati 'cd /var/www/nova && git status --short --branch && pm2 describe nova'
 ```
 
-افحص ملف البيئة:
+افحص وجود ملف البيئة بدون طباعته كاملًا في المحادثات العامة:
 
 ```bash
-ssh hemati 'sudo -u deploy bash -lc "cd /var/www/nova && sed -n \"1,40p\" .env"'
+ssh hemati 'cd /var/www/nova && test -f .env && sed -n "1,20p" .env'
 ```
 
-ملاحظات مهمة:
-- قاعدة البيانات تقرأ من ملف `.env` داخل السيرفر.
-- لا تستبدل قاعدة البيانات من local إلا إذا كان هناك تلف فعلي أو طلب صريح.
-- النظام الحالي يعمل بمبدأ migration آمن: ينشئ الجداول الجديدة ويعبئها من البيانات الموجودة بدون حذف البيانات الأصلية.
+تأكد أن nginx يقرأ ملف الموقع الصحيح:
+
+```bash
+ssh hemati 'nginx -T 2>/dev/null | grep -n "server_name\\|proxy_pass" | grep -A1 -B1 "novatech\\|nova"'
+```
 
 ## Safe Deploy Steps
 
 نفّذ الخطوات التالية بالترتيب.
 
-### 1. دخول إلى السيرفر كمستخدم `deploy`
+### 1. ادخل إلى السيرفر
 
 ```bash
 ssh hemati
-sudo -u deploy -i
 cd /var/www/nova
 ```
 
-### 2. أخذ نسخة احتياطية من قاعدة البيانات
+### 2. خذ نسخة احتياطية من قاعدة البيانات
 
 ```bash
 mkdir -p backups
-export $(grep -v '^#' .env | xargs)
+set -a
+. ./.env
+set +a
 stamp=$(date +%Y%m%d-%H%M%S)
 pg_dump "$DATABASE_URL" > "backups/nova-$stamp.sql"
 ```
 
-هذا backup منطقي كامل بدون لمس البيانات.
+هذا backup منطقي كامل ولا يغيّر البيانات.
 
-### 3. حفظ أي تعديلات محلية على السيرفر قبل `git pull`
+### 3. احفظ أي تعديلات محلية على السيرفر قبل السحب
 
-إذا ظهر تعديل محلي غير مهم مثل `package-lock.json`:
+افحص الحالة:
+
+```bash
+git status --short --branch
+```
+
+إذا ظهرت تعديلات محلية غير مطلوبة:
 
 ```bash
 git stash push -m "pre-deploy-$stamp"
 ```
 
-إذا لم يكن هناك تعديلات:
+لا تستخدم `git reset --hard` إلا بطلب صريح.
 
-```bash
-git status --short
-```
-
-### 4. سحب آخر تحديث من GitHub
+### 4. اسحب آخر تحديث من GitHub
 
 ```bash
 git fetch origin
 git pull --ff-only origin main
 ```
 
-لا تستخدم `git reset --hard` إلا إذا كنت متأكدًا جدًا ووافق المسؤول عن السيرفر.
-
-### 5. تثبيت الحزم
+### 5. ثبّت الحزم
 
 ```bash
 npm ci
 ```
 
-### 6. بناء التطبيق
+### 6. طبّق schema والبيانات الافتراضية بأمان
+
+هذا المشروع لا يستخدم `dashboard-repo` ولا migrations منفصلة. التحديث الصحيح يتم عبر:
+
+```bash
+npm run db:push
+```
+
+الأمر يقوم بالتالي:
+- ينشئ جداول PostgreSQL الناقصة.
+- يضيف البيانات الافتراضية فقط إذا لم تكن موجودة.
+- لا يستبدل الصفوف الموجودة بسبب استخدام `ON CONFLICT DO NOTHING` و`WHERE NOT EXISTS`.
+
+### 7. ابن التطبيق
 
 ```bash
 npm run build
 ```
 
-### 7. تطبيق تحديثات قاعدة البيانات بدون حذف البيانات
-
-النظام الحالي لا يعتمد على ملفات migration منفصلة. التحديث يتم عبر طبقة `dashboard-repo` نفسها، وهي:
-- تنشئ الجداول المطلوبة إذا لم تكن موجودة
-- تهاجر البيانات القديمة إلى الجداول الجديدة
-- لا تستبدل البيانات الموجودة بقاعدة بيانات من local
-
-لتنفيذ migration يدويًا:
+### 8. أعد تشغيل التطبيق
 
 ```bash
-npx tsx -e "import { getDashboardStore } from './lib/dashboard-repo'; (async () => { const store = await getDashboardStore(); console.log(JSON.stringify({ locales: store.locales.length, sections: store.homeSections.length, pages: store.pages.length, treatments: store.treatments.length, doctors: store.doctors.length, categories: store.blogCategories.length, posts: store.blogPosts.length, admins: store.siteSettings.admins.length }, null, 2)); })();"
-```
-
-هذا الأمر:
-- يضمن إنشاء schema
-- يضمن migration للبيانات
-- لا يحذف البيانات الحالية
-- يطبع ملخصًا سريعًا للتأكد أن القراءة نجحت
-
-## Restart Application
-
-بعد نجاح البناء وmigration:
-
-```bash
-pm2 restart nova
+pm2 restart nova --update-env
 pm2 save --force
 pm2 list
 ```
 
+إذا لم يكن التطبيق موجودًا في PM2:
+
+```bash
+pm2 start npm --name nova -- start -- --port 3002 --hostname 127.0.0.1
+pm2 save --force
+```
+
+## Nginx Domain
+
+الدومين الحالي المطلوب هو:
+
+```text
+novatech-nas.ae
+www.novatech-nas.ae
+```
+
+احفظ نسخة من ملف nginx قبل التعديل:
+
+```bash
+stamp=$(date +%Y%m%d-%H%M%S)
+cp /etc/nginx/sites-available/nova "/etc/nginx/sites-available/nova.bak-$stamp"
+```
+
+تأكد أن الملف يحتوي على:
+
+```nginx
+server {
+    server_name novatech-nas.ae www.novatech-nas.ae;
+
+    location / {
+        proxy_pass http://127.0.0.1:3002;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+ثم استخرج أو حدّث شهادة SSL:
+
+```bash
+certbot --nginx -d novatech-nas.ae -d www.novatech-nas.ae
+```
+
+بعد أي تعديل:
+
+```bash
+nginx -t
+systemctl reload nginx
+```
+
 ## Verify After Deploy
 
-افحص التطبيق:
+افحص logs:
 
 ```bash
 pm2 logs nova --lines 100
 ```
 
-تحقق من أن التطبيق يعمل:
+تحقق من التطبيق محليًا من داخل السيرفر:
 
 ```bash
-curl -I http://127.0.0.1:3005
+curl -I http://127.0.0.1:3002
 ```
+
+تحقق من الدومين:
+
+```bash
+curl -I https://novatech-nas.ae
+curl -I https://www.novatech-nas.ae
+```
+
 ## Database Notes
 
-البنية الحالية أصبحت منظمة في جداول فعلية مثل:
+الجداول الحالية التي ينشئها `npm run db:push`:
 
-- `admin_users`
-- `site_settings`
-- `site_locales`
-- `home_sections`
-- `home_section_localizations`
-- `home_section_items`
-- `managed_pages`
-- `page_localizations`
-- `page_stats`
-- `page_cards`
-- `page_sections`
-- `page_ctas`
-- `page_offices`
-- `page_faqs`
-- `treatments`
-- `treatment_localizations`
-- `doctors`
-- `doctor_localizations`
-- `blog_categories`
-- `blog_category_localizations`
-- `blog_posts`
-- `blog_post_localizations`
-
-الجدول القديم `dashboard_content` بقي كمرجع legacy/backup، لكن التحديثات الجديدة تعمل على الجداول المنظمة.
+- `admins`
+- `settings`
+- `section_content`
+- `hero`
+- `partners`
+- `certifications`
+- `gallery_images`
+- `blogs`
+- `about_cards`
+- `services`
+- `catalog_products`
+- `industries`
+- `footer_links`
 
 ## Important Safety Rules
 
-- لا تحذف ملف `.env`
-- لا تستبدل قاعدة البيانات من local إلا عند الضرورة القصوى
-- دائمًا خذ `pg_dump` قبل أي deploy
-- استخدم `git pull --ff-only`
-- شغّل `npm run build` قبل `pm2 restart`
-- نفّذ migration قبل restart إن كان هناك تغييرات على قاعدة البيانات
-- لا تشغّل أوامر المشروع كمستخدم `root` داخل ملفات المشروع
-
+- لا تحذف ملف `.env`.
+- لا تستبدل قاعدة البيانات من local.
+- خذ `pg_dump` قبل أي deploy.
+- استخدم `git pull --ff-only`.
+- شغّل `npm run db:push` قبل `npm run build` إذا كان السيرفر جديدًا أو هناك تغييرات schema.
+- شغّل `npm run build` قبل `pm2 restart`.
+- لا تغيّر منفذ PM2 أو nginx إلا معًا.

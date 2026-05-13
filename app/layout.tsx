@@ -3,7 +3,7 @@ import "./globals.css";
 import { siteName } from "@/lib/content";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://novatech.example.com"),
+  metadataBase: new URL("https://novatech-nas.ae"),
   title: {
     default: `${siteName} | Industrial & Engineering Services`,
     template: `%s | ${siteName}`,
