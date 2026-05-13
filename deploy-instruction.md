@@ -10,6 +10,7 @@
 - Git branch: `main`
 - PM2 app name: `nova`
 - PM2 start command: `npm start -- --port 3002 --hostname 127.0.0.1`
+- Required Node.js for deploy: `/root/.nvm/versions/node/v20.19.6/bin`
 - Public domain: `novatech-nas.ae`
 - Nginx site file: `/etc/nginx/sites-available/nova`
 - Nginx upstream: `http://127.0.0.1:3002`
@@ -24,12 +25,20 @@
 ```bash
 ssh hemati
 cd /var/www/nova
+export PATH=/root/.nvm/versions/node/v20.19.6/bin:$PATH
+node -v
 ```
 
 أو بسطر واحد:
 
 ```bash
 ssh hemati 'cd /var/www/nova && bash'
+```
+
+ملاحظة: إذا ظهر `node -v` بإصدار أقل من `v20`، فعّل Node 20 قبل أوامر `npm`:
+
+```bash
+export PATH=/root/.nvm/versions/node/v20.19.6/bin:$PATH
 ```
 
 ## Before Updating
@@ -61,6 +70,7 @@ ssh hemati 'nginx -T 2>/dev/null | grep -n "server_name\\|proxy_pass" | grep -A1
 ```bash
 ssh hemati
 cd /var/www/nova
+export PATH=/root/.nvm/versions/node/v20.19.6/bin:$PATH
 ```
 
 ### 2. خذ نسخة احتياطية من قاعدة البيانات
