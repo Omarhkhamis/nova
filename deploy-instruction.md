@@ -112,8 +112,10 @@ git pull --ff-only origin main
 ### 5. ثبّت الحزم
 
 ```bash
-npm ci
+npm ci --include=dev
 ```
+
+استخدم `--include=dev` لأن build يحتاج TypeScript وحزم `@types/*`، وملف `.env` على السيرفر يحتوي `NODE_ENV=production`.
 
 ### 6. طبّق schema والبيانات الافتراضية بأمان
 
