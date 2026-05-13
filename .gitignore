@@ -1,6 +1,6 @@
 # dependencies
 /node_modules
-
+deploy-instruction.md
 # next.js build output
 /.next
 /out
